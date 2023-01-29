@@ -55,20 +55,16 @@ const counterClosure = function () {
 };
 
 // Closures for each counter.
-const counterOneClosure = counterClosure();
-const counterTwoClosure = counterClosure();
-const counterThreeClosure = counterClosure();
-
 const closuresObj = {
-  one: counterOneClosure,
-  two: counterTwoClosure,
-  three: counterThreeClosure,
+  one: counterClosure(),
+  two: counterClosure(),
+  three: counterClosure(),
 };
 
 // Adding an event listener and assigning a callback on Button Click.
-function assignEvent(selectedElement, callback, callbackParams) {
+function assignEvent(selectedElement, callback, callbackParam) {
   selectedElement.addEventListener('click', function () {
-    callback(...callbackParams);
+    callback(callbackParam);
   });
 }
 
@@ -84,6 +80,18 @@ for (counterButton of counterModifierButtons) {
   assignEvent(
     counterButton,
     closuresObj[requiredClosureNumber][counterAction],
-    [requiredCounter]
+    requiredCounter
   );
 }
+
+const localStorageHelpers = {
+  getItem(item) {
+    localStorage.getItem(item);
+  },
+  setItem(item) {
+    localStorage.setItem(item, value);
+  },
+  removeItem(item) {
+    localStorage.removeItem(item);
+  },
+};
