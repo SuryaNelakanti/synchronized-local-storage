@@ -1,97 +1,163 @@
-const counterClosure = function () {
+const localStorageHelpers = {
+  getItem(item, param) {
+    const localStore = JSON.parse(localStorage.getItem(item));
+    if (localStore) {
+      return localStore[param];
+    }
+  },
+  setItem(item, value, locked) {
+    localStorage.setItem(
+      item,
+      JSON.stringify({
+        counterValue: value,
+        locked: locked ? locked : false,
+      })
+    );
+  },
+  removeItem(item) {
+    localStorage.removeItem(item);
+  },
+};
+
+const localStorageObj = {
+  counterValue: 0,
+  locked: false,
+};
+
+const counterClosure = function (localStore) {
+  const counterStore = localStore;
+
   let isLocked = false;
+  if (localStorageHelpers.getItem(localStore, 'locked')) {
+    isLocked = localStorageHelpers.getItem(localStore, 'locked');
+  }
+
   let counterValue = 0;
 
-  function updateCounterValue(selectedBox) {
-    selectedBox.innerHTML = counterValue;
+  if (localStorageHelpers.getItem(localStore, 'counterValue')) {
+    counterValue = parseInt(
+      localStorageHelpers.getItem(localStore, 'counterValue')
+    );
   }
 
-  function increaseCounter(selectedBox) {
+  updateCounterValue(requiredClosureElement(localStore));
+
+  function refreshCounterValue(selectedCounter) {
+    counterValue = parseInt(
+      localStorageHelpers.getItem(localStore, 'counterValue')
+    );
+
+    if (localStorageHelpers.getItem(localStore, 'locked') != isLocked) {
+      toggleLock(selectedCounter);
+    }
+
+    updateCounterValue(selectedCounter);
+  }
+
+  function updateCounterValue(selectedCounter) {
+    selectedCounter.innerHTML = counterValue;
+    localStorageHelpers.setItem(counterStore, counterValue, isLocked);
+  }
+
+  function increaseCounter(selectedCounter) {
     if (isLocked) {
       return;
     }
+
     counterValue += 1;
-    updateCounterValue(selectedBox);
+    updateCounterValue(selectedCounter);
   }
 
-  function decreaseCounter(selectedBox) {
+  function decreaseCounter(selectedCounter) {
     if (isLocked) {
       return;
     }
+
     counterValue -= 1;
-    updateCounterValue(selectedBox);
+    updateCounterValue(selectedCounter);
   }
 
-  function resetCounter(selectedBox) {
+  function resetCounter(selectedCounter) {
     if (isLocked) {
       return;
     }
+
     counterValue = 0;
-    updateCounterValue(selectedBox);
+    updateCounterValue(selectedCounter);
   }
 
-  function toggleLock(selectedBox) {
+  function toggleLock(selectedCounter) {
     isLocked = !isLocked;
-    selectedBox.style.color = isLocked ? 'red' : 'black';
+    lockStyleChange(selectedCounter);
+  }
+
+  function lockStyleChange(selectedCounter) {
+    selectedCounter.style.color = isLocked ? 'red' : 'black';
+
+    document.getElementById(`toggle-${selectedCounter.id}`).innerHTML = isLocked
+      ? 'Unlock'
+      : 'Lock';
+
+    localStorageHelpers.setItem(counterStore, counterValue, isLocked);
   }
 
   return {
-    increase(selectedBox) {
-      increaseCounter(selectedBox);
+    increase(selectedCounter) {
+      increaseCounter(selectedCounter);
     },
-    decrease(selectedBox) {
-      decreaseCounter(selectedBox);
+
+    decrease(selectedCounter) {
+      decreaseCounter(selectedCounter);
     },
-    reset(selectedBox) {
-      resetCounter(selectedBox);
+
+    reset(selectedCounter) {
+      resetCounter(selectedCounter);
     },
-    toggle(selectedBox) {
-      toggleLock(selectedBox);
-      document.getElementById(`toggle-${selectedBox.id}`).innerHTML = isLocked
-        ? 'Unlock'
-        : 'Lock';
+
+    refreshValue(selectedCounter) {
+      refreshCounterValue(selectedCounter);
+    },
+
+    toggle(selectedCounter) {
+      toggleLock(selectedCounter);
     },
   };
 };
 
 // Closures for each counter.
 const closuresObj = {
-  one: counterClosure(),
-  two: counterClosure(),
-  three: counterClosure(),
+  one: counterClosure('one'),
+  two: counterClosure('two'),
+  three: counterClosure('three'),
 };
 
-// Adding an event listener and assigning a callback on Button Click.
-function assignEvent(selectedElement, callback, callbackParam) {
-  selectedElement.addEventListener('click', function () {
-    callback(callbackParam);
-  });
+function requiredClosureElement(closureNumber) {
+  return document.getElementById('counter-' + closureNumber);
 }
 
 const counterModifierButtons = document.querySelectorAll('button');
 
+// Adding an event listener and assigning a callback on Button Click.
 for (counterButton of counterModifierButtons) {
+  // Get Closure method required.
   const counterAction = counterButton.id.split('-')[0];
-  const requiredClosureNumber = counterButton.id.split('-').slice(-1)[0];
-  const requiredCounter = document.getElementById(
-    'counter-' + requiredClosureNumber
-  );
 
-  assignEvent(
-    counterButton,
-    closuresObj[requiredClosureNumber][counterAction],
-    requiredCounter
-  );
+  // Get key of ClosureObj.
+  const requiredClosureNumber = counterButton.id.split('-').slice(-1)[0];
+
+  // Get counter element Id.
+  const requiredCounter = requiredClosureElement(requiredClosureNumber);
+
+  // Adding event listener onClick.
+  counterButton.addEventListener('click', function () {
+    closuresObj[requiredClosureNumber][counterAction](requiredCounter);
+  });
 }
 
-const localStorageHelpers = {
-  getItem(item) {
-    localStorage.getItem(item);
-  },
-  setItem(item) {
-    localStorage.setItem(item, value);
-  },
-  removeItem(item) {
-    localStorage.removeItem(item);
-  },
+window.onstorage = function (evt) {
+  const updatedCounterNumber = evt.key;
+
+  closuresObj[updatedCounterNumber].refreshValue(
+    requiredClosureElement(updatedCounterNumber)
+  );
 };
