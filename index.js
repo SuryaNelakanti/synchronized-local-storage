@@ -59,6 +59,12 @@ const counterOneClosure = counterClosure();
 const counterTwoClosure = counterClosure();
 const counterThreeClosure = counterClosure();
 
+const closuresObj = {
+  one: counterOneClosure,
+  two: counterTwoClosure,
+  three: counterThreeClosure,
+};
+
 // Adding an event listener and assigning a callback on Button Click.
 function assignEvent(selectedElement, callback, callbackParams) {
   selectedElement.addEventListener('click', function () {
@@ -66,27 +72,18 @@ function assignEvent(selectedElement, callback, callbackParams) {
   });
 }
 
-const boxOne = document.getElementById('counter-one');
-const boxTwo = document.getElementById('counter-two');
-const boxThree = document.getElementById('counter-three');
-
 const counterModifierButtons = document.querySelectorAll('button');
 
 for (counterButton of counterModifierButtons) {
   const counterAction = counterButton.id.split('-')[0];
-  const requiredClosure = counterButton.id.split('-').slice(-1)[0];
+  const requiredClosureNumber = counterButton.id.split('-').slice(-1)[0];
+  const requiredCounter = document.getElementById(
+    'counter-' + requiredClosureNumber
+  );
 
-  switch (requiredClosure) {
-    case 'one':
-      assignEvent(counterButton, counterOneClosure[counterAction], [boxOne]);
-      break;
-    case 'two':
-      assignEvent(counterButton, counterTwoClosure[counterAction], [boxTwo]);
-      break;
-    case 'three':
-      assignEvent(counterButton, counterThreeClosure[counterAction], [
-        boxThree,
-      ]);
-      break;
-  }
+  assignEvent(
+    counterButton,
+    closuresObj[requiredClosureNumber][counterAction],
+    [requiredCounter]
+  );
 }
