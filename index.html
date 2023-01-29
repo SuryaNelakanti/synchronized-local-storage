@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Synchronizing</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <H1>Tab Synchronized Counters</H1>
+    <header>
+        <b><i>So what is a mutex anyway?</i></b>
+        <p>Mutex is a mutual exclusion object that synchronizes access to a resource. It is created with a unique name at the start of a program. The mutex locking mechanism ensures only one thread can acquire the mutex and enter the critical section. This thread only releases the mutex when it exits in the critical section.</p>
+        <b><i>....come again?</i></b>
+        <p>A mutex is a way to make sure that only one thing can happen at a time when multiple things want to happen at the same time.</p>
+        <b><i>Right, got it.</i></b>
+        <p>Let us do a simple demonstration of the same.</p>
+    </header>
+    <main>
+        <div class="boxes">
+            <div class="box">
+                <button id="toggle-counter-one">Lock</button>
+                <div class="counter-value" id="counter-one">0</div>
+                <div class="box__buttons">
+                    <button id="increase-counter-one">+</button>
+                    <button id="reset-counter-one">Reset</button>
+                    <button id="decrease-counter-one">-</button>
+                </div>
+            </div>
+
+            <div class="box">
+                <button id="toggle-counter-two">Lock</button>
+                <div class="counter-value" id="counter-two">0</div>
+                <div class="box__buttons">
+                    <button id="increase-counter-two">+</button>
+                    <button id="reset-counter-two">Reset</button>
+                    <button id="decrease-counter-two">-</button>
+                </div>
+            </div>
+                
+            <div class="box">
+                <button id="toggle-counter-three">Lock</button>
+                <div class="counter-value" id="counter-three">0</div>
+                <div class="box__buttons">
+                    <button id="increase-counter-three">+</button>
+                    <button id="reset-counter-three">Reset</button>
+                    <button id="decrease-counter-three">-</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+<script src="mutex.js"></script>
+</html>
