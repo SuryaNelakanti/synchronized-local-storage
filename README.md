@@ -1,6 +1,7 @@
 # synchronized-local-storage
 
 Local Storage Counters
+
 This code implements multiple counters that are persisted in localStorage.
 
 ## Features
